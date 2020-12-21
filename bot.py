@@ -7,7 +7,7 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-
+import re
 import pprint as pp
 
 
@@ -16,10 +16,13 @@ intents = intents.all()
 
 
 load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
-GUILD_NAME = os.getenv('DISCORD_GUILD')
+DISCORD_TOKEN=os.getenv("DISCORD_TOKEN")
+DISCORD_GUILD=os.getenv("DISCORD_GUILD")
 
-VERBOSE = eval(os.getenv('VERBOSE'))
+SAY_PLEASE=os.getenv("SAY_PLEASE")
+
+VERBOSE=eval(os.getenv("VERBOSE"))
+
 
 
 
@@ -35,15 +38,7 @@ if "debug" in VERBOSE:
 bot = commands.Bot(command_prefix="bruno!", intents=intents)
 
 
-async def get_all_user_profiles(guild):
-	members = guild.members
-	print(members)
-	for member in members:
-		#DEBUG
-		print(member)
-		profile = await member.profile()
-		print(profile)
-		break
+
 
 
 @bot.event
@@ -51,19 +46,60 @@ async def get_all_user_profiles(guild):
 async def on_ready():
 	#set globs
 	for guild in bot.guilds:
-		if guild.name == GUILD_NAME:
+		if guild.name == DISCORD_GUILD:
 			glob_guild = guild
 			print(f'{bot.user} is listening to guild {guild.name}')
-			break 
-	#members = await glob_guild.chunk()
-	#glob_members = await glob_guild.fetch_members().flatten()
-
+			break
 	if "debug" in VERBOSE:
 		pass
 
-	await get_all_user_profiles(glob_guild)
+
+
+@bot.command(name="pronouns", ignore_extra=True)
+async def pronouns(ctx, *args):
+	guild = ctx.guild
+
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[0].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	message = await ctx.send("React here for pronouns!\n\n\N{FULL MOON SYMBOL}: he/him\n\N{BLACK SUN WITH RAYS}: she/her\n\N{WHITE MEDIUM STAR}:"
+		"they/them\n(message @june if you want neopronouns)")
+	await message.add_reaction("\N{FULL MOON SYMBOL}")
+	await message.add_reaction("\N{BLACK SUN WITH RAYS}")
+	await message.add_reaction("\N{WHITE MEDIUM STAR}")
+
+	def check(reaction, user):
+		return user != message.author
+
+	try:
+		reaction, user = await bot.wait_for('reaction_add', check=check)
+	except asyncio.TimeoutError:
+		pass
+	else:
+		role = None
+		if reaction.emoji == "\N{FULL MOON SYMBOL}":
+			role = "he/him"
+		elif reaction.emoji == "\N{BLACK SUN WITH RAYS}":
+			role = "she/her"
+		elif reaction.emoji == "\N{WHITE MEDIUM STAR}":
+			role = "they/them"
+		role = discord.utils.get(guild.roles, name=role)
+		member = [m for m in guild.members if m.id == user.id][0]
+		await member.add_roles(role, reason="Pronouns by Bruno!")
+	return
 
 
 
 
-bot.run(TOKEN)
+
+
+
+
+
+
+bot.run(DISCORD_TOKEN)
