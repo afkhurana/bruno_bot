@@ -8,6 +8,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 import re
+import json
 import pprint as pp
 
 
@@ -24,7 +25,8 @@ SAY_PLEASE=os.getenv("SAY_PLEASE")
 VERBOSE=eval(os.getenv("VERBOSE"))
 
 
-
+with open("message_ids.json", newline='') as f:
+	message_ids = json.load(f)
 
 
 #initialize globals
@@ -73,14 +75,18 @@ async def pronouns(ctx, *args):
 	await message.add_reaction("\N{BLACK SUN WITH RAYS}")
 	await message.add_reaction("\N{WHITE MEDIUM STAR}")
 
-	def check(reaction, user):
-		return user != message.author
+	message_ids["pronouns"].append(message.id)
+	with open("message_ids.json", "w") as f:
+		json.dump(message_ids, f, indent=4)
 
-	try:
-		reaction, user = await bot.wait_for('reaction_add', check=check)
-	except asyncio.TimeoutError:
-		pass
-	else:
+
+
+
+@bot.event
+async def on_reaction_add(reaction, user):
+	guild = reaction.message.guild
+	
+	if reaction.message.id in message_ids["pronouns"]:
 		role = None
 		if reaction.emoji == "\N{FULL MOON SYMBOL}":
 			role = "he/him"
@@ -91,11 +97,6 @@ async def pronouns(ctx, *args):
 		role = discord.utils.get(guild.roles, name=role)
 		member = [m for m in guild.members if m.id == user.id][0]
 		await member.add_roles(role, reason="Pronouns by Bruno!")
-	return
-
-
-
-
 
 
 
