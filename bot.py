@@ -14,6 +14,10 @@ import asyncio
 import pprint as pp
 
 
+cwd = os.path.dirname(os.path.realpath(__file__))
+message_ids_path = os.path.join(cwd, "message_ids.json")
+
+
 intents = discord.Intents()
 intents = intents.all()
 
@@ -46,11 +50,11 @@ message_ids = None
 
 def load_ids():
 	global message_ids
-	with open("message_ids.json", newline='') as f:
+	with open(message_ids_path, newline='') as f:
 		message_ids = json.load(f)
 load_ids()
 def dump_ids():
-	with open("message_ids.json", "w") as f:
+	with open(message_ids_path, "w") as f:
 		json.dump(message_ids, f, indent=4)
 
 
