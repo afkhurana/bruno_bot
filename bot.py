@@ -186,7 +186,24 @@ async def listen_for_games(payload):
 
 
 
+@bot.command(name="dev", ignore_extra=True)
+async def dev(ctx, *args):
 
+	guild = ctx.guild
+
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[0].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	dev_role = discord.utils.get(guild.roles, name="bruno!dev")
+	await ctx.author.add_roles(dev_role, reason="Dev_role by Bruno!")
+	await ctx.message.add_reaction(get(bot.emojis, name="bruno"))
+	message = "You're now a bruno dev! Check out the source code at https://github.com/afkhurana/bruno_bot"
+	message = await ctx.send(message)
 
 
 
@@ -200,9 +217,8 @@ async def listen_for_goodmorning(message):
 		return
 
 	if "good morning" in message.content.lower():
-		bruno_emoji = get(bot.emojis, name="bruno")
 		await message.add_reaction("\N{HEAVY BLACK HEART}")
-		await message.add_reaction(bruno_emoji)
+		await message.add_reaction(get(bot.emojis, name="bruno"))
 
 @tasks.loop(hours=24)
 async def message_goodmorning():
