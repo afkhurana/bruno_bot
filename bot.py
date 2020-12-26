@@ -6,6 +6,7 @@
 import os
 import discord
 from discord.ext import commands, tasks
+from discord.utils import get
 from dotenv import load_dotenv
 import re
 import json
@@ -30,15 +31,20 @@ SAY_PLEASE=os.getenv("SAY_PLEASE")
 
 GOODMORNING_CHANNEL_NAME=os.getenv("GOODMORNING_CHANNEL")
 
+
 VERBOSE=eval(os.getenv("VERBOSE"))
 
 
 
+games_list = {"Among Us":"among_us",
+		"Jackbox":"jackbox",
+		"Minecraft":"minecraft"}
 
 
-#initialize globals
-glob_guild = None
-glob_goodmorning_channel = None
+
+
+
+
 if "debug" in VERBOSE:
 	glob_test = None
 
@@ -64,8 +70,6 @@ def dump_ids():
 # @commands.bot_has_permissions(manage_nicknames=True)
 async def on_ready():
 	#set globs
-	global glob_guild
-	global glob_goodmorning_channel
 
 	for guild in bot.guilds:
 		if guild.name == DISCORD_GUILD:
@@ -106,15 +110,15 @@ async def pronouns(ctx, *args):
 	message_ids["pronouns"].append(message.id)
 	dump_ids()
 
-
-
-
 @bot.listen('on_raw_reaction_add')
 async def listen_for_pronouns(payload):
 	emoji = str(payload.emoji)
 	member = payload.member
 	message_id = payload.message_id
 	guild = member.guild
+
+	if member.bot:
+		return
 	
 	#pronouns reacts
 	if message_id in message_ids["pronouns"]:
@@ -131,6 +135,63 @@ async def listen_for_pronouns(payload):
 		print(f"Gave member {member} pronouns {role}")
 
 
+
+
+@bot.command(name="games", ignore_extra=True)
+async def games(ctx, *args):
+
+	guild = ctx.guild
+
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[0].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	message = "React here for games roles!\n"
+	for game_name, game_emoji_name in games_list.items():
+		game_emoji = get(bot.emojis, name=game_emoji_name)
+		message += f"\n<:{game_emoji_name}:{game_emoji.id}>: {game_name}"
+
+	message = await ctx.send(message)
+	for game_name, game_emoji_name in games_list.items():
+		await message.add_reaction(get(bot.emojis, name=game_emoji_name))
+
+	message_ids["games"].append(message.id)
+	dump_ids()
+
+@bot.listen('on_raw_reaction_add')
+async def listen_for_games(payload):
+	emoji = payload.emoji
+	member = payload.member
+	message_id = payload.message_id
+	guild = member.guild
+
+	if member.bot:
+		return
+	
+	#pronouns reacts
+	if message_id in message_ids["games"]:
+		role = None
+		for game_name, game_emoji_name in games_list.items():
+			if emoji.name == game_emoji_name:
+				role = game_name
+		role = discord.utils.get(guild.roles, name=role)
+		# member = [m for m in guild.members if m.id == user.id][0]
+		await member.add_roles(role, reason="Games by Bruno!")
+		print(f"Gave member {member} game role {role}")
+
+
+
+
+
+
+
+
+
+
 @bot.listen('on_message')
 async def listen_for_goodmorning(message):
 	guild = message.guild
@@ -139,11 +200,9 @@ async def listen_for_goodmorning(message):
 		return
 
 	if "good morning" in message.content.lower():
+		bruno_emoji = get(bot.emojis, name="bruno")
 		await message.add_reaction("\N{HEAVY BLACK HEART}")
-		await message.add_reaction("\N{BEAR FACE}")
-
-
-
+		await message.add_reaction(bruno_emoji)
 
 @tasks.loop(hours=24)
 async def message_goodmorning():
@@ -160,6 +219,18 @@ async def before_message_goodmorning():
 			print("Entering goodmorning loop")
 			break
 		await asyncio.sleep(10)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 bot.run(DISCORD_TOKEN)
