@@ -154,6 +154,7 @@ async def before_message_goodmorning():
 	for _ in range(60*60*24):
 		if datetime.datetime.now().hour == 9:
 			print("Entering goodmorning loop")
+			break
 		await asyncio.sleep(10)
 
 
