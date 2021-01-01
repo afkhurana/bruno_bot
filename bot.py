@@ -30,17 +30,17 @@ DISCORD_GUILD=os.getenv("DISCORD_GUILD")
 SAY_PLEASE=os.getenv("SAY_PLEASE")
 
 GOODMORNING_CHANNEL_NAME=os.getenv("GOODMORNING_CHANNEL")
+INTRODUCTIONS_CHANNEL_NAME=os.getenv("INTRODUCTIONS_CHANNEL")
 
 
 VERBOSE=eval(os.getenv("VERBOSE"))
 
 
+with open(os.path.join("configs", "games_list.json")) as f:
+	games_list = json.load(f)
 
-games_list = {"Among Us":"among_us",
-		"Jackbox":"jackbox",
-		"Minecraft":"minecraft"}
-
-
+with open(os.path.join("configs", "hi_strings.json")) as f:
+	hi_strings = json.load(f)["hi_strings"]
 
 
 
@@ -81,7 +81,9 @@ async def on_ready():
 			global glob_goodmorning_channel
 			glob_goodmorning_channel = channel
 			print(f'{bot.user} wants to say Good Morning! in #{channel.name}')
-			break
+		elif channel.name == INTRODUCTIONS_CHANNEL_NAME:
+			global glob_introductions_channel
+			glob_introductions_channel = channel
 	if "debug" in VERBOSE:
 		pass
 
@@ -240,6 +242,15 @@ async def before_message_goodmorning():
 
 
 
+@bot.listen('on_message')
+async def listen_for_introduction(message):
+	if message.channel != glob_introductions_channel:
+		return
+	if message.is_system():
+		return
+
+	if any(hi_string in message.content.lower() for hi_string in hi_strings):
+		await message.add_reaction("\N{WAVING HAND SIGN}")
 
 
 
