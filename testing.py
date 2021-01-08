@@ -1,10 +1,14 @@
 
 import discord
 import smtplib, ssl
+import dotenv
 from random import randint
 import time
 
 client = discord.Client()
+
+load_dotenv()
+DISCORD_TOKEN=os.getenv("DAANISH_TOKEN")
 
 def send_email(user_email, randomint):
     gmail_user = "brown25devteam@gmail.com"
@@ -73,4 +77,4 @@ async def on_reaction_add(reaction, user):
                 await userdm.send("awesome, the codes matched, welcome to the Brown University Class of 2025 Server!")
                 await user.add_roles(role)
 
-client.run('Nzk1NzQwNDUzNDI4NTI3MTA1.X_NxDA.f39KeSbIHu6XcXZ9HWIUmiOia-w')
+client.run(DAANISH_TOKEN)
