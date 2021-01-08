@@ -10,6 +10,7 @@ client = discord.Client()
 load_dotenv()
 DISCORD_TOKEN=os.getenv("DAANISH_TOKEN")
 
+
 def send_email(user_email, randomint):
     gmail_user = "brown25devteam@gmail.com"
     gmail_password = "BrunoIsCool"
