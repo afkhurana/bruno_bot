@@ -231,7 +231,7 @@ async def message_goodmorning():
 async def before_message_goodmorning():
 	print("Waiting to enter goodmorning loop")
 	for _ in range(60*60*24):
-		if datetime.datetime.now().hour == 9:
+		if datetime.datetime.now().replace(tzinfo=datetime.timezone.est).hour == 9:
 			print("Entering goodmorning loop")
 			break
 		await asyncio.sleep(10)
@@ -267,7 +267,7 @@ async def backstabbr(ctx, *args):
 			#load config
 			with open(os.path.join("configs", "backstabbr_countries.json")) as f:
 				backstabbr_countries = json.load(f)
-			sent_orders = backstabbr_api.get_submitted_countries()
+			sent_orders = backstabbr_api.get_submitted_countries("BROWN")
 			ids_to_send = [user_id for country, user_id in backstabbr_countries.items() if sent_orders[country] == False]
 			message = "The following countries still need to send orders:\n"
 			for user_id in ids_to_send:
