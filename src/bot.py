@@ -9,7 +9,7 @@ import datetime
 import asyncio
 import pprint as pp
 
-import backstabbr_api.src.backstabbr_api.BackstabbrAPI as BackstabbrAPI
+import backstabbr_api.src.backstabbr_api as backstabbr_api_module
 
 
 
@@ -45,7 +45,7 @@ with open(os.path.join("configs", "backstabbr_config.json")) as f:
 	config = json.load(f)
 	GAME_URL = config[f"BROWN_GAME_URL"]
 	SESSION_TOKEN = config["SESSION_TOKEN"]
-backstabbr_api = BackstabbrAPI(SESSION_TOKEN, GAME_URL)
+backstabbr_api = backstabbr_api_module.BackstabbrAPI(SESSION_TOKEN, GAME_URL)
 
 
 # initialize client
