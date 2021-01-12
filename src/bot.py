@@ -1,8 +1,3 @@
-# <:thinking:263a7f4eeb6f69e46d969fa479188592>
-
-
-
-# bot.py
 import os
 import discord
 from discord.ext import commands, tasks
@@ -13,6 +8,9 @@ import json
 import datetime
 import asyncio
 import pprint as pp
+
+import backstabbr_api.src.backstabbr_api as backstabbr_api
+
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
@@ -253,6 +251,28 @@ async def listen_for_introduction(message):
 		await message.add_reaction("\N{WAVING HAND SIGN}")
 
 
+
+@bot.command(name="backstabbr", ignore_extra=True)
+async def backstabbr(ctx, *args):
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[-1].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	if len(args) >= 3:
+		if args[0] == "remind" and args[1] == "orders":
+			#load config
+			with open(os.path.join("configs", "backstabbr_countries.json")) as f:
+				backstabbr_countries = json.load(f)
+			sent_orders = backstabbr_api.get_submitted_countries()
+			ids_to_send = [user_id for country, user_id in backstabbr_countries.items() if sent_orders[country] == False]
+			message = "The following countries still need to send orders:\n"
+			for user_id in ids_to_send:
+				message += f"{get(ctx.guild.members, id=user_id).mention}\n"
+			await ctx.send(message)
 
 
 
