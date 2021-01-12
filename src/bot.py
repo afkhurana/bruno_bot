@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import re
 import json
 import datetime
+import pytz
 import asyncio
 import pprint as pp
 
@@ -228,7 +229,7 @@ async def message_goodmorning():
 async def before_message_goodmorning():
 	print("Waiting to enter goodmorning loop")
 	for _ in range(60*60*24):
-		if datetime.datetime.now().replace(tzinfo=datetime.timezone.est).hour == 9:
+		if datetime.datetime.now(pytz.timezone("US/Eastern")).hour == 9:
 			print("Entering goodmorning loop")
 			break
 		await asyncio.sleep(10)
