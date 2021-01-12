@@ -9,7 +9,7 @@ import datetime
 import asyncio
 import pprint as pp
 
-import backstabbr_api.src.backstabbr_api as backstabbr_api
+import backstabbr_api.src.backstabbr_api.BackstabbrAPI as BackstabbrAPI
 
 
 
@@ -31,25 +31,27 @@ GOODMORNING_CHANNEL_NAME=os.getenv("GOODMORNING_CHANNEL")
 INTRODUCTIONS_CHANNEL_NAME=os.getenv("INTRODUCTIONS_CHANNEL")
 
 
-VERBOSE=eval(os.getenv("VERBOSE"))
 
 
+# load configs
 with open(os.path.join("configs", "games_list.json")) as f:
 	games_list = json.load(f)
 
 with open(os.path.join("configs", "hi_strings.json")) as f:
 	hi_strings = json.load(f)["hi_strings"]
 
+# load backstabbr configs
+with open(os.path.join("configs", "backstabbr_config.json")) as f:
+	config = json.load(f)
+	GAME_URL = config[f"BROWN_GAME_URL"]
+	SESSION_TOKEN = config["SESSION_TOKEN"]
+backstabbr_api = BackstabbrAPI(SESSION_TOKEN, GAME_URL)
 
 
-
-if "debug" in VERBOSE:
-	glob_test = None
-
-
-#initialize client
+# initialize client
 bot = commands.Bot(command_prefix="bruno!", intents=intents)
 message_ids = None
+
 
 
 def load_ids():
@@ -65,10 +67,7 @@ def dump_ids():
 
 
 @bot.event
-# @commands.bot_has_permissions(manage_nicknames=True)
 async def on_ready():
-	#set globs
-
 	for guild in bot.guilds:
 		if guild.name == DISCORD_GUILD:
 			glob_guild = guild
@@ -82,8 +81,6 @@ async def on_ready():
 		elif channel.name == INTRODUCTIONS_CHANNEL_NAME:
 			global glob_introductions_channel
 			glob_introductions_channel = channel
-	if "debug" in VERBOSE:
-		pass
 
 	message_goodmorning.start()
 
@@ -262,17 +259,20 @@ async def backstabbr(ctx, *args):
 			await ctx.send("Say please!")
 			return
 
-	if len(args) >= 3:
-		if args[0] == "remind" and args[1] == "orders":
-			#load config
-			with open(os.path.join("configs", "backstabbr_countries.json")) as f:
-				backstabbr_countries = json.load(f)
-			sent_orders = backstabbr_api.get_submitted_countries("BROWN")
-			ids_to_send = [user_id for country, user_id in backstabbr_countries.items() if sent_orders[country] == False]
-			message = "The following countries still need to send orders:\n"
-			for user_id in ids_to_send:
-				message += f"{get(ctx.guild.members, id=user_id).mention}\n"
-			await ctx.send(message)
+	if args[0] == "remind" and args[1] == "orders":
+		# load countries
+		with open(os.path.join("configs", "backstabbr_countries.json")) as f:
+			backstabbr_countries = json.load(f)
+
+		# retrieve list from api
+		sent_orders = backstabbr_api.get_submitted_countries()
+		ids_to_send = [user_id for country, user_id in backstabbr_countries.items() if sent_orders[country] == False]
+
+		# message users
+		message = "The following countries still need to send orders:\n"
+		for user_id in ids_to_send:
+			message += f"{get(ctx.guild.members, id=int(user_id)).mention}\n"
+		await ctx.send(message)
 
 
 
