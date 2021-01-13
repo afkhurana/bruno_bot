@@ -10,7 +10,6 @@ import pytz
 import asyncio
 import pprint as pp
 
-import backstabbr_api.src.backstabbr_api as backstabbr_api_module
 
 
 
@@ -41,12 +40,6 @@ with open(os.path.join("configs", "games_list.json")) as f:
 with open(os.path.join("configs", "hi_strings.json")) as f:
 	hi_strings = json.load(f)["hi_strings"]
 
-# load backstabbr configs
-with open(os.path.join("configs", "backstabbr_config.json")) as f:
-	config = json.load(f)
-	GAME_URL = config[f"BROWN_GAME_URL"]
-	SESSION_TOKEN = config["SESSION_TOKEN"]
-backstabbr_api = backstabbr_api_module.BackstabbrAPI(SESSION_TOKEN, GAME_URL)
 
 
 # initialize client
@@ -249,31 +242,6 @@ async def listen_for_introduction(message):
 		await message.add_reaction("\N{WAVING HAND SIGN}")
 
 
-
-@bot.command(name="backstabbr", ignore_extra=True)
-async def backstabbr(ctx, *args):
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
-	if args[0] == "remind" and args[1] == "orders":
-		# load countries
-		with open(os.path.join("configs", "backstabbr_countries.json")) as f:
-			backstabbr_countries = json.load(f)
-
-		# retrieve list from api
-		sent_orders = backstabbr_api.get_submitted_countries()
-		ids_to_send = [user_id for country, user_id in backstabbr_countries.items() if sent_orders[country] == False]
-
-		# message users
-		message = "The following countries still need to send orders:\n"
-		for user_id in ids_to_send:
-			message += f"{get(ctx.guild.members, id=int(user_id)).mention}\n"
-		await ctx.send(message)
 
 
 
