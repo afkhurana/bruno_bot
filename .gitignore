@@ -2,3 +2,5 @@
 client.py
 message_ids.json
 src/configs/*
+
+env/
