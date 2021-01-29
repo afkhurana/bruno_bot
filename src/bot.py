@@ -197,6 +197,26 @@ async def dev(ctx, *args):
 	message = await ctx.send(message)
 
 
+@bot.command(name="questionnaire", ignore_extra=True)
+async def questionnaire(ctx, *args):
+
+	guild = ctx.guild
+
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[0].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	dev_role = discord.utils.get(guild.roles, name="questionnaire")
+	await ctx.author.add_roles(dev_role, reason="Questionnaire role by Bruno!")
+	await ctx.message.add_reaction(get(bot.emojis, name="bruno"))
+	message = "You're now authorized to help with Dave's questionnaire!"
+	message = await ctx.send(message)
+
+
 
 
 
