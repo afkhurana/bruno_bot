@@ -175,6 +175,41 @@ async def listen_for_games(payload):
 		print(f"Gave member {member} game role {role}")
 
 
+@bot.command(name="im", ignore_extra=True)
+async def im(ctx, *args):
+	guild = ctx.guild
+
+	if args[0].lower() == "horny":
+		message = await ctx.send("React here to join the Bible Discussion Study Meeting channel.\nNote: you must submit a screenshot of results from",
+								"https://bdsmtest.org/")
+		await message.add_reaction("\N{EYES}")
+
+		if "horny" not in message_ids.keys():
+			message_ids["horny"] = []
+		message_ids["horny"].append(message.id)
+		dump_ids()
+
+
+@bot.listen('on_raw_reaction_add')
+async def listen_for_horny(payload):
+	emoji = str(payload.emoji)
+	member = payload.member
+	message_id = payload.message_id
+	guild = member.guild
+
+	if emoji.name != "eyes":
+		return
+
+	if member.bot:
+		return
+	
+	#pronouns reacts
+	if message_id in message_ids["pronouns"]:
+		role = "bible-discussion-study-meeting"
+		role = discord.utils.get(guild.roles, name=role)
+		await member.add_roles(role, reason="Bruno! thinks user is horny")
+		print(f"Gave member {member} bible-discussion-study-meeting role")
+
 
 
 @bot.command(name="dev", ignore_extra=True)
