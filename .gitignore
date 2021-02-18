@@ -4,3 +4,5 @@ message_ids.json
 src/configs/*
 
 env/
+
+bruno_bot/screenshots/
