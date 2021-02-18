@@ -263,10 +263,26 @@ async def listen_for_introduction(message):
 
 
 
+@bot.command("collect_bible")
+async def collect_bible(ctx, *args):
+	
+	load_dotenv()
+	ARJUN_ID=os.getenv("ARJUN_ID")
 
+	if ctx.author.id != ARJUN_ID:
+		return
 
+	with open(os.path.join("configs", "channel_ids.json")) as f:
+		if ctx.channel.id != json.load(f)["bible-discussion-study-meeting"]:
+			return
 
-
+	# arjun sent this message to the bible discussion channel
+	pins = await ctx.channel.pins()
+	for message in pins:
+		screenshot = message.attachments[-1]
+		path = os.path.join("screenshots", message.author.name, message.filename.split(".")[-1])
+		await screenshot.save(path)
+		print(f"Saved message from {message.author.name}")
 
 
 bot.run(DISCORD_TOKEN)
