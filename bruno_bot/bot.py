@@ -10,6 +10,9 @@ import pytz
 import asyncio
 import pprint as pp
 
+import hashlib
+import smtplib, ssl
+
 
 
 
@@ -30,13 +33,11 @@ SAY_PLEASE=os.getenv("SAY_PLEASE")
 GOODMORNING_CHANNEL_NAME=os.getenv("GOODMORNING_CHANNEL")
 INTRODUCTIONS_CHANNEL_NAME=os.getenv("INTRODUCTIONS_CHANNEL")
 
-
-
-
 # load configs
+with open(os.path.join("configs", "email_info.json")) as f:
+	email_info = json.load(f)
 with open(os.path.join("configs", "games_list.json")) as f:
 	games_list = json.load(f)
-
 with open(os.path.join("configs", "hi_strings.json")) as f:
 	hi_strings = json.load(f)["hi_strings"]
 
@@ -320,6 +321,65 @@ async def collect_bible(ctx, *args):
 		path = os.path.join("screenshots", message.author.name, message.filename.split(".")[-1])
 		await screenshot.save(path)
 		print(f"Saved message from {message.author.name}")
+
+
+
+
+# VERIFICATION
+
+def create_verification_code(*args):
+	return hashlib.md5(str(args) + email_info[secret_key]).hexdigest()
+
+def send_email(address, subject, message):
+	pass # TODO
+
+
+welcome_message = ("Welcome! In order to gain access to the Brown Class of 2025 Discord server, "
+					"we ask that you complete a verification with your Brown email address.")
+please_send_email_message = "Please send your email in the format *email@brown.edu*"
+email_invalid_message = "Sorry, the email you sent was not a Brown email. Please try again."
+emailed_code_message = ("I emailed you a verification code! Please send it back to me here.",
+						"\n(If you don't receive a code, type anything to start over)")
+
+@bot.listen('on_member_join')
+async def dm_member_on_join(member):
+	await member.send(welcome_message)
+	await member.send(please_send_email_message)
+	return
+
+@bot.listen('on_message')
+async def handle_dm(message):
+	if message.guild:
+		return
+	# message is DM
+
+	last_message = await channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
+
+	if last_message == please_send_email_message:
+		# message is email address
+		if not message.content.endswith("@brown.edu"):
+			await message.channel.send(email_invalid_message)
+			await message.channel.send(please_send_email_message)
+		else:
+			address = message.content
+			subject = "Brown '25 Discord Verification Code"
+			verification_code = create_verification_code()
+			message = None
+			send_email(address, subject, message) # TODO
+			await message.channel.send(emailed_code_message)
+
+	elif last_message == emailed_code_message:
+		# message is verification code
+		if message.content != verification_code:
+			await message.channel.send("Sorry, the code doesn't match. Try again!")
+			await message.channel.send("To confirm you are a Brown student, please send your email in the format *email@brown.edu*")
+		else:
+			# user verified
+			# TODO
+
+# END VERIFICATION
+
+
 
 
 bot.run(DISCORD_TOKEN)
