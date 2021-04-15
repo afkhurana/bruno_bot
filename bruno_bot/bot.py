@@ -65,6 +65,7 @@ def dump_ids():
 async def on_ready():
 	for guild in bot.guilds:
 		if guild.name == DISCORD_GUILD:
+			global glob_guild
 			glob_guild = guild
 			print(f'{bot.user} is listening to guild {guild.name}')
 			break
@@ -350,6 +351,11 @@ please_send_email_message = "Please send your email in the format *email@brown.e
 email_invalid_message = "Sorry, the email you sent was not a Brown email. Please try again."
 emailed_code_message = ("I emailed you a verification code! Please send it back to me here.",
 						"\n(If you don't receive a code, type anything to start over)")
+code_invalid_message = "Sorry, the code doesn't match. Try again!"
+
+
+secret_key = "foo_test"
+
 
 @bot.listen('on_member_join')
 async def dm_member_on_join(member):
@@ -363,7 +369,10 @@ async def handle_dm(message):
 		return
 	# message is DM
 
+
 	last_message = await channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
+
+	verification_code = create_verification_code(message.author.id, secret_key)
 
 	if last_message == please_send_email_message:
 		# message is email address
@@ -373,19 +382,25 @@ async def handle_dm(message):
 		else:
 			address = message.content
 			subject = "Brown '25 Discord Verification Code"
-			verification_code = create_verification_code()
-			body = None
-			send_email(address, subject, body) # TODO
+			
+			# body = None
+			body = verification_code #TODO make pretty
+
+			send_email(address, subject, body)
 			await message.channel.send(emailed_code_message)
 
 	elif last_message == emailed_code_message:
 		# message is verification code
 		if message.content != verification_code:
-			await message.channel.send("Sorry, the code doesn't match. Try again!")
-			await message.channel.send("To confirm you are a Brown student, please send your email in the format *email@brown.edu*")
+			await message.channel.send(code_invalid_message)
+			await message.channel.send(please_send_email_message)
 		else:
-			# user verified
-			# TODO
+			await give_user_brown_verified_role(message.author)
+
+async def give_user_brown_verified_role(user):
+	member = glob_guild.get_member(user.id)
+	role = discord.utils.get(guild.roles, name="Verified Brownie")
+	await member.add_roles(role, reason="Verification by Bruno!")
 
 # END VERIFICATION
 
