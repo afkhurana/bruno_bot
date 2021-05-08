@@ -1,8 +1,11 @@
 .env
 client.py
 message_ids.json
+
+testing.py
 src/configs/*
 
 env/
 
 bruno_bot/screenshots/
+

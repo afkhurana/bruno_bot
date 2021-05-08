@@ -10,6 +10,10 @@ import pytz
 import asyncio
 import pprint as pp
 import random
+import hashlib
+import smtplib, ssl
+
+
 
 
 
@@ -30,13 +34,11 @@ SAY_PLEASE=os.getenv("SAY_PLEASE")
 GOODMORNING_CHANNEL_NAME=os.getenv("GOODMORNING_CHANNEL")
 INTRODUCTIONS_CHANNEL_NAME=os.getenv("INTRODUCTIONS_CHANNEL")
 
-
-
-
 # load configs
+with open(os.path.join("configs", "email_info.json")) as f:
+	email_info = json.load(f)
 with open(os.path.join("configs", "games_list.json")) as f:
 	games_list = json.load(f)
-
 with open(os.path.join("configs", "hi_strings.json")) as f:
 	hi_strings = json.load(f)["hi_strings"]
 
@@ -64,6 +66,7 @@ def dump_ids():
 async def on_ready():
 	for guild in bot.guilds:
 		if guild.name == DISCORD_GUILD:
+			global glob_guild
 			glob_guild = guild
 			print(f'{bot.user} is listening to guild {guild.name}')
 			break
@@ -365,16 +368,84 @@ async def collect_bible(ctx, *args):
 
 
 
+
+# VERIFICATION
+
+def create_verification_code(*args):
+	return hashlib.md5(str(args) + email_info[secret_key]).hexdigest()
+
+def send_email(address, subject, body):
+
+    sent_from = email_info["login_info"]["username"]
+    to = [address]
+    message = 'Subject: {}\n\n{}'.format(subject, body)
+
+    context = ssl.create_default_context()
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls(context=context)
+        server.login(email_info["login_info"]["username"], email_info["login_info"]["password"])
+        server.sendmail(sent_from, to, message)
+        server.close()
+
+
+welcome_message = ("Welcome! In order to gain access to the Brown Class of 2025 Discord server, "
+					"we ask that you complete a verification with your Brown email address.")
+please_send_email_message = "Please send your email in the format *email@brown.edu*"
+email_invalid_message = "Sorry, the email you sent was not a Brown email. Please try again."
+emailed_code_message = ("I emailed you a verification code! Please send it back to me here.",
+						"\n(If you don't receive a code, type anything to start over)")
+code_invalid_message = "Sorry, the code doesn't match. Try again!"
+
+
+secret_key = "foo_test"
+
+
 @bot.listen('on_member_join')
-async def welcome(member):
-	# with open(os.path.join("configs", "temp_greetings_messages.json")) as f:
-	# 	greetings_messages = json.load(f)["main"]
-	# message = random.choice(greetings_messages)
-	with open(os.path.join("configs", "fun_messages.txt")) as f:
-		message = random.choice(f.read().split("\n"))
-	# message = await glob_goodmorning_channel.send(greeting)
-	await asyncio.sleep(1)
-	await glob_goodmorning_channel.send(message)
+async def dm_member_on_join(member):
+	await member.send(welcome_message)
+	await member.send(please_send_email_message)
+	return
+
+@bot.listen('on_message')
+async def handle_dm(message):
+	if message.guild:
+		return
+	# message is DM
+
+
+	last_message = await channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
+
+	verification_code = create_verification_code(message.author.id, secret_key)
+
+	if last_message == please_send_email_message:
+		# message is email address
+		if not message.content.endswith("@brown.edu"):
+			await message.channel.send(email_invalid_message)
+			await message.channel.send(please_send_email_message)
+		else:
+			address = message.content
+			subject = "Brown '25 Discord Verification Code"
+			
+			# body = None
+			body = verification_code #TODO make pretty
+
+			send_email(address, subject, body)
+			await message.channel.send(emailed_code_message)
+
+	elif last_message == emailed_code_message:
+		# message is verification code
+		if message.content != verification_code:
+			await message.channel.send(code_invalid_message)
+			await message.channel.send(please_send_email_message)
+		else:
+			await give_user_brown_verified_role(message.author)
+
+async def give_user_brown_verified_role(user):
+	member = glob_guild.get_member(user.id)
+	role = discord.utils.get(guild.roles, name="Verified Brownie")
+	await member.add_roles(role, reason="Verification by Bruno!")
+
+# END VERIFICATION
 
 
 bot.run(DISCORD_TOKEN)
