@@ -4,6 +4,7 @@ message_ids.json
 
 testing.py
 src/configs/*
+bruno_bot/configs/*
 
 env/
 
