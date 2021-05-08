@@ -283,6 +283,8 @@ async def listen_for_goodmorning(message):
 		await message.add_reaction(get(bot.emojis, name="bruno"))
 	elif "bruno" in message.content.lower():
 		await message.add_reaction(get(bot.emojis, name="bruno"))
+	elif "darius" in message.content.lower():
+		await message.add_reaction(get(bot.emojis, name="darius"))
 
 
 
@@ -306,21 +308,21 @@ async def before_message_goodmorning():
 
 
 
-@tasks.loop(hours=24)
-async def message_greetings():
-	print("Greetings!")
-	with open(os.path.join("configs", "fun_messages.txt")) as f:
-		greeting = random.choice(f.read().split("\n"))
-	message = await glob_goodmorning_channel.send(greeting)
+# @tasks.loop(hours=24)
+# async def message_greetings():
+# 	print("Greetings!")
+# 	with open(os.path.join("configs", "fun_messages.txt")) as f:
+# 		greeting = random.choice(f.read().split("\n"))
+# 	message = await glob_goodmorning_channel.send(greeting)
 
-@message_greetings.before_loop
-async def before_message_greetings():
-	print("Waiting to enter greetings loop")
-	for _ in range(60*60*24):
-		if datetime.datetime.now(pytz.timezone("US/Eastern")).hour == 12:
-			print("Entering greetings loop")
-			break
-		await asyncio.sleep(30)
+# @message_greetings.before_loop
+# async def before_message_greetings():
+# 	print("Waiting to enter greetings loop")
+# 	for _ in range(60*60*24):
+# 		if datetime.datetime.now(pytz.timezone("US/Eastern")).hour == 12:
+# 			print("Entering greetings loop")
+# 			break
+# 		await asyncio.sleep(30)
 
 
 
@@ -365,7 +367,14 @@ async def collect_bible(ctx, *args):
 
 @bot.listen('on_member_join')
 async def welcome(member):
-	await glob_goodmorning_channel.send("Welcome! I'm Bruno and we love you <3")
+	# with open(os.path.join("configs", "temp_greetings_messages.json")) as f:
+	# 	greetings_messages = json.load(f)["main"]
+	# message = random.choice(greetings_messages)
+	with open(os.path.join("configs", "fun_messages.txt")) as f:
+		message = random.choice(f.read().split("\n"))
+	# message = await glob_goodmorning_channel.send(greeting)
+	await asyncio.sleep(1)
+	await glob_goodmorning_channel.send(message)
 
 
 bot.run(DISCORD_TOKEN)
