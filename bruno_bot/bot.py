@@ -80,7 +80,7 @@ async def on_ready():
 			glob_introductions_channel = channel
 
 	message_goodmorning.start()
-	message_greetings.start()
+	# message_greetings.start()
 
 
 
@@ -372,7 +372,7 @@ async def collect_bible(ctx, *args):
 # VERIFICATION
 
 def create_verification_code(*args):
-	return hashlib.md5(str(args) + email_info[secret_key]).hexdigest()
+	return hashlib.md5((str(args) + email_info["secret_key"]).encode("utf-8")).hexdigest()
 
 def send_email(address, subject, body):
 
@@ -392,9 +392,10 @@ welcome_message = ("Welcome! In order to gain access to the Brown Class of 2025 
 					"we ask that you complete a verification with your Brown email address.")
 please_send_email_message = "Please send your email in the format *email@brown.edu*"
 email_invalid_message = "Sorry, the email you sent was not a Brown email. Please try again."
-emailed_code_message = ("I emailed you a verification code! Please send it back to me here.",
+emailed_code_message = ("I emailed you a verification code! Please send it back to me here."
 						"\n(If you don't receive a code, type anything to start over)")
 code_invalid_message = "Sorry, the code doesn't match. Try again!"
+success_message = "Congrats! You are now a verified Brownie!"
 
 
 secret_key = "foo_test"
@@ -406,22 +407,66 @@ async def dm_member_on_join(member):
 	await member.send(please_send_email_message)
 	return
 
+
+# @bot.command("verify_everyone")
+# async def verify_everyone(ctx, *args):
+# 	for member in glob_guild.members:
+# 		await member.send(welcome_message)
+# 		await member.send(please_send_email_message)
+@bot.command("verify_member")
+async def verify_member(ctx, *args):
+	# args = '<@!246820778954326017>'
+	# 246820778954326017
+	user_id = int(args[0][3:-1])
+	member = ctx.guild.get_member(user_id)
+	await member.send(welcome_message)
+	await member.send(please_send_email_message)
+
+@bot.command("verify")
+async def verify_me(ctx, *args):
+	if args[0].lower() != "me":
+		return
+
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[-1].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	member = ctx.author
+
+	await member.send(welcome_message)
+	await member.send(please_send_email_message)
+
+
+
 @bot.listen('on_message')
 async def handle_dm(message):
 	if message.guild:
 		return
+	if message.is_system():
+		return
+	if message.author.bot:
+		return
+
 	# message is DM
 
 
-	last_message = await channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
+	last_message = await message.channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
+	last_message = last_message.content
 
 	verification_code = create_verification_code(message.author.id, secret_key)
 
+
 	if last_message == please_send_email_message:
+
 		# message is email address
 		if not message.content.endswith("@brown.edu"):
 			await message.channel.send(email_invalid_message)
 			await message.channel.send(please_send_email_message)
+	
 		else:
 			address = message.content
 			subject = "Brown '25 Discord Verification Code"
@@ -439,11 +484,14 @@ async def handle_dm(message):
 			await message.channel.send(please_send_email_message)
 		else:
 			await give_user_brown_verified_role(message.author)
+			await message.channel.send(success_message)
+	return
 
 async def give_user_brown_verified_role(user):
 	member = glob_guild.get_member(user.id)
-	role = discord.utils.get(guild.roles, name="Verified Brownie")
+	role = discord.utils.get(glob_guild.roles, name="Verified Brownie")
 	await member.add_roles(role, reason="Verification by Bruno!")
+	return
 
 # END VERIFICATION
 
