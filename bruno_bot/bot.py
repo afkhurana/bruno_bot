@@ -413,19 +413,12 @@ async def dm_member_on_join(member):
 # 	for member in glob_guild.members:
 # 		await member.send(welcome_message)
 # 		await member.send(please_send_email_message)
-@bot.command("verify_member")
-async def verify_member(ctx, *args):
-	# args = '<@!246820778954326017>'
-	# 246820778954326017
-	user_id = int(args[0][3:-1])
-	member = ctx.guild.get_member(user_id)
-	await member.send(welcome_message)
-	await member.send(please_send_email_message)
+# @bot.command("verify")
+# async def verify_member(ctx, *args):
+
 
 @bot.command("verify")
 async def verify_me(ctx, *args):
-	if args[0].lower() != "me":
-		return
 
 	if SAY_PLEASE:
 		if len(args) == 0:
@@ -435,10 +428,26 @@ async def verify_me(ctx, *args):
 			await ctx.send("Say please!")
 			return
 
-	member = ctx.author
+	if args[0].lower().startswith('<@!'):
 
-	await member.send(welcome_message)
-	await member.send(please_send_email_message)
+
+
+		# args = '<@!246820778954326017>'
+		# 246820778954326017
+		user_id = int(args[0][3:-1])
+		member = ctx.guild.get_member(user_id)
+		await member.send(welcome_message)
+		await member.send(please_send_email_message)
+
+
+	elif args[0].lower() == "me":
+		# return
+
+
+		member = ctx.author
+
+		await member.send(welcome_message)
+		await member.send(please_send_email_message)
 
 
 
@@ -472,7 +481,7 @@ async def handle_dm(message):
 			subject = "Brown '25 Discord Verification Code"
 			
 			# body = None
-			body = verification_code #TODO make pretty
+			body = "Here is your verification code! Copy-paste this into your DM with Bruno (me):\n\n" + verification_code #TODO make pretty
 
 			send_email(address, subject, body)
 			await message.channel.send(emailed_code_message)
