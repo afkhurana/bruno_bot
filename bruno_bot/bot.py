@@ -84,6 +84,12 @@ async def on_ready():
 
 
 
+
+
+# ROLES
+
+
+
 @bot.command(name="pronouns", ignore_extra=True)
 async def pronouns(ctx, *args):
 	guild = ctx.guild
@@ -128,6 +134,8 @@ async def listen_for_pronouns(payload):
 		# member = [m for m in guild.members if m.id == user.id][0]
 		await member.add_roles(role, reason="Pronouns by Bruno!")
 		print(f"Gave member {member} pronouns {role}")
+
+
 
 
 
@@ -180,86 +188,17 @@ async def listen_for_games(payload):
 
 
 
-# @bot.command(name="praise", ignore_extra=True)
-# async def bdsm(ctx, *args):
-# 	guild = ctx.guild
-
-# 	if args[0].lower() == "jesus":
-# 		message = ("React here to join the Bible Discussion Study Meeting channel.\n"
-# 					"Note: you must submit a screenshot of results from "
-# 								"https://bdsmtest.org/")
-# 		message = await ctx.send(message)
-# 		await message.add_reaction("\N{EYES}")
-
-# 		if "horny" not in message_ids.keys():
-# 			message_ids["horny"] = []
-# 		message_ids["horny"].append(message.id)
-# 		dump_ids()
 
 
-# @bot.listen('on_raw_reaction_add')
-# async def listen_for_horny(payload):
-# 	emoji = str(payload.emoji)
-# 	member = payload.member
-# 	message_id = payload.message_id
-# 	guild = member.guild
-
-# 	if emoji != "\N{EYES}":
-# 		return
-
-# 	if member.bot:
-# 		return
-	
-# 	#pronouns reacts
-# 	if message_id in message_ids["horny"]:
-# 		role = "bible"
-# 		role = discord.utils.get(guild.roles, name=role)
-# 		await member.add_roles(role, reason="Bruno! thinks user is horny")
-# 		print(f"Gave member {member} bible-discussion-study-meeting role")
 
 
-@bot.command(name="dev", ignore_extra=True)
-async def dev(ctx, *args):
-
-	guild = ctx.guild
-
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[0].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
-	dev_role = discord.utils.get(guild.roles, name="bruno!dev")
-	await ctx.author.add_roles(dev_role, reason="Dev_role by Bruno!")
-	await ctx.message.add_reaction(get(bot.emojis, name="bruno"))
-	message = "You're now a bruno dev! Check out the source code at https://github.com/afkhurana/bruno_bot"
-	message = await ctx.send(message)
 
 
-@bot.command(name="questionnaire", ignore_extra=True)
-async def questionnaire(ctx, *args):
 
-	guild = ctx.guild
 
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[0].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
-	dev_role = discord.utils.get(guild.roles, name="questionnaire")
-	await ctx.author.add_roles(dev_role, reason="Questionnaire role by Bruno!")
-	await ctx.message.add_reaction(get(bot.emojis, name="bruno"))
-	message = "You're now authorized to help with Dave's questionnaire!"
-	message = await ctx.send(message)
 
 @bot.command(name="goodmorning", ignore_extra=True)
 async def goodmorning(ctx, *args):
-
 	guild = ctx.guild
 
 	if SAY_PLEASE:
@@ -271,7 +210,6 @@ async def goodmorning(ctx, *args):
 			return
 
 	await message_goodmorning()
-
 
 
 @bot.listen('on_message')
@@ -288,8 +226,6 @@ async def listen_for_goodmorning(message):
 		await message.add_reaction(get(bot.emojis, name="bruno"))
 	elif "darius" in message.content.lower():
 		await message.add_reaction(get(bot.emojis, name="darius"))
-
-
 
 
 @tasks.loop(hours=24)
@@ -310,26 +246,6 @@ async def before_message_goodmorning():
 
 
 
-
-# @tasks.loop(hours=24)
-# async def message_greetings():
-# 	print("Greetings!")
-# 	with open(os.path.join("configs", "fun_messages.txt")) as f:
-# 		greeting = random.choice(f.read().split("\n"))
-# 	message = await glob_goodmorning_channel.send(greeting)
-
-# @message_greetings.before_loop
-# async def before_message_greetings():
-# 	print("Waiting to enter greetings loop")
-# 	for _ in range(60*60*24):
-# 		if datetime.datetime.now(pytz.timezone("US/Eastern")).hour == 12:
-# 			print("Entering greetings loop")
-# 			break
-# 		await asyncio.sleep(30)
-
-
-
-
 @bot.listen('on_message')
 async def listen_for_introduction(message):
 	if message.channel != glob_introductions_channel:
@@ -339,33 +255,6 @@ async def listen_for_introduction(message):
 
 	if any(hi_string in message.content.lower() for hi_string in hi_strings):
 		await message.add_reaction("\N{WAVING HAND SIGN}")
-
-
-
-@bot.command("collect_bible")
-async def collect_bible(ctx, *args):
-	
-	with open(os.path.join("configs", "channel_ids.json")) as f:
-		ARJUN_ID = json.load(f)["ARJUN_ID"]
-
-	if ctx.author.id != ARJUN_ID:
-		print("not arjun")
-		return
-
-	with open(os.path.join("configs", "channel_ids.json")) as f:
-		if ctx.channel.id != json.load(f)["bible-discussion-study-meeting"]:
-			print("not bible")
-			return
-
-	# arjun sent this message to the bible discussion channel
-	pins = await ctx.channel.pins()
-	for message in pins:
-		screenshot = message.attachments[-1]
-		path = os.path.join("screenshots", str(message.author.id)+"."+screenshot.filename.split(".")[-1])
-		# path = "screenshots"
-		await screenshot.save(path)
-		print(f"Saved message from {message.author.name}")
-
 
 
 
@@ -429,11 +318,6 @@ async def verify_me(ctx, *args):
 			return
 
 	if args[0].lower().startswith('<@!'):
-
-
-
-		# args = '<@!246820778954326017>'
-		# 246820778954326017
 		user_id = int(args[0][3:-1])
 		member = ctx.guild.get_member(user_id)
 		await member.send(welcome_message)
@@ -461,8 +345,6 @@ async def handle_dm(message):
 		return
 
 	# message is DM
-
-
 	last_message = await message.channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
 	last_message = last_message.content
 
