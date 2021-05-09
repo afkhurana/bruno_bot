@@ -130,7 +130,7 @@ async def send_role_message(ctx, *args):
 
 	# send message
 	message_content = roles_dict[role_type]["message"]
-	if not isinstance(message_content, basestring):
+	if not isinstance(message_content, str):
 		message_content = f"React here for {role_type} role!\n"
 		if roles_dict[role]["unicode"]:
 			for emoji, role_name in roles_dict[role_type]["emojis"].items():
@@ -156,19 +156,19 @@ async def send_role_message(ctx, *args):
 
 @bot.listen('on_raw_reaction_add')
 async def listen_for_role(payload):
-	if member.bot:
-		return
-
 	emoji = str(payload.emoji)
 	member = payload.member
 	message_id = payload.message_id
 	guild = member.guild
+
+	if member.bot:
+		return
 	
 	# check which role
 	load_roles()
 	role_type = None
-	for check_role_type, role_message_ids in message_ids:
-		if message_id in message_ids:
+	for check_role_type, role_message_ids in message_ids.items():
+		if message_id in role_message_ids:
 			role_type = check_role_type
 	if role_type is None:
 		return
