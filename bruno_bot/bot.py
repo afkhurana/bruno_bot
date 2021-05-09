@@ -19,6 +19,7 @@ import smtplib, ssl
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 message_ids_path = os.path.join(cwd, "message_ids.json")
+roles_path = os.path.join(cwd, "roles.json")
 
 
 intents = discord.Intents()
@@ -88,108 +89,95 @@ async def on_ready():
 
 # ROLES
 
+def load_roles():
+	global roles_dict
+	with open(roles_path, newline='') as f:
+		roles_dict = json.load(f)
+load_roles()
 
-
-@bot.command(name="pronouns", ignore_extra=True)
-async def pronouns(ctx, *args):
-	guild = ctx.guild
-
+@bot.command(name="load")
+async def load(ctx, *args):
 	if SAY_PLEASE:
 		if len(args) == 0:
 			await ctx.send("Say please!")
 			return			
-		if args[0].lower() != "please":
+		if args[-1].lower() != "please":
 			await ctx.send("Say please!")
 			return
 
-	message = await ctx.send("React here for pronouns!\n\n\N{FULL MOON SYMBOL}: he/him\n\N{BLACK SUN WITH RAYS}: she/her\n\N{WHITE MEDIUM STAR}:"
-		"they/them\n(message @june if you want neopronouns)")
-	await message.add_reaction("\N{FULL MOON SYMBOL}")
-	await message.add_reaction("\N{BLACK SUN WITH RAYS}")
-	await message.add_reaction("\N{WHITE MEDIUM STAR}")
+	if args[0] == "roles":
+		load_roles()
 
-	message_ids["pronouns"].append(message.id)
+
+
+@bot.command(name="role")
+async def send_role_message(ctx, *args):
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[-1].lower() != "please":
+			await ctx.send("Say please!")
+			return
+
+	load_roles()
+	role_type = args[0]
+	if role_type not in list(roles_dict.keys()):
+		await ctx.send("Pardon me, didn't quite get that.")
+		return
+
+	# command success
+
+	# send message
+	message_content = roles_dict[role_type]["message"]
+	if not isinstance(message_content, basestring):
+		message_content = f"React here for {role_type} role!\n"
+		if roles_dict[role]["unicode"]:
+			for emoji, role_name in roles_dict[role_type]["emojis"].items():
+				message_content += f"\n{emoji}: {role_name}"
+		else:
+			for emoji_name, role_name in roles_dict[role_type]["emojis"].items():
+				emoji = get(bot.emojis, name=emoji_name)			
+				message_content += f"\n<:{emoji_name}:{emoji.id}>: {role_name}"
+	message = await ctx.send(message_content)
+	# add reactions
+	if roles_dict[role_type]["unicode"]:
+		for emoji, role_name in roles_dict[role_type]["emojis"].items():
+			await message.add_reaction(emoji)
+	else:
+		for emoji_name, role_name in roles_dict[role_type]["emojis"].items():
+			emoji = get(bot.emojis, name=emoji_name)
+
+
+	# dump id
+	message_ids[role_type].append(message.id)
 	dump_ids()
+	return
 
 @bot.listen('on_raw_reaction_add')
-async def listen_for_pronouns(payload):
+async def listen_for_role(payload):
+	if member.bot:
+		return
+
 	emoji = str(payload.emoji)
 	member = payload.member
 	message_id = payload.message_id
 	guild = member.guild
-
-	if member.bot:
-		return
 	
-	#pronouns reacts
-	if message_id in message_ids["pronouns"]:
-		role = None
-		if emoji == "\N{FULL MOON SYMBOL}":
-			role = "he/him"
-		elif emoji == "\N{BLACK SUN WITH RAYS}":
-			role = "she/her"
-		elif emoji == "\N{WHITE MEDIUM STAR}":
-			role = "they/them"
-		role = discord.utils.get(guild.roles, name=role)
-		# member = [m for m in guild.members if m.id == user.id][0]
-		await member.add_roles(role, reason="Pronouns by Bruno!")
-		print(f"Gave member {member} pronouns {role}")
-
-
-
-
-
-
-@bot.command(name="games", ignore_extra=True)
-async def games(ctx, *args):
-
-	guild = ctx.guild
-
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[0].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
-	message = "React here for games roles!\n"
-	for game_name, game_emoji_name in games_list.items():
-		game_emoji = get(bot.emojis, name=game_emoji_name)
-		message += f"\n<:{game_emoji_name}:{game_emoji.id}>: {game_name}"
-
-	message = await ctx.send(message)
-	for game_name, game_emoji_name in games_list.items():
-		await message.add_reaction(get(bot.emojis, name=game_emoji_name))
-
-	message_ids["games"].append(message.id)
-	dump_ids()
-
-@bot.listen('on_raw_reaction_add')
-async def listen_for_games(payload):
-	emoji = payload.emoji
-	member = payload.member
-	message_id = payload.message_id
-	guild = member.guild
-
-	if member.bot:
+	# check which role
+	load_roles()
+	role_type = None
+	for check_role_type, role_message_ids in message_ids:
+		if message_id in message_ids:
+			role_type = check_role_type
+	if role_type is None:
 		return
-	
-	#pronouns reacts
-	if message_id in message_ids["games"]:
-		role = None
-		for game_name, game_emoji_name in games_list.items():
-			if emoji.name == game_emoji_name:
-				role = game_name
-		role = discord.utils.get(guild.roles, name=role)
-		# member = [m for m in guild.members if m.id == user.id][0]
-		await member.add_roles(role, reason="Games by Bruno!")
-		print(f"Gave member {member} game role {role}")
 
+	role_name = roles_dict[role_type]["emojis"][emoji]
 
-
-
-
+	role = get(guild.roles, name=role_name)
+	await member.add_roles(role, reason="Roles by Bruno!")
+	print(f"Gave member {member} role {role_type} {role_name}")
 
 
 
@@ -205,7 +193,7 @@ async def goodmorning(ctx, *args):
 		if len(args) == 0:
 			await ctx.send("Say please!")
 			return			
-		if args[0].lower() != "please":
+		if args[-1].lower() != "please":
 			await ctx.send("Say please!")
 			return
 
