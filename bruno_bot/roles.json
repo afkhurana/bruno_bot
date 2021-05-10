@@ -6,7 +6,19 @@
 			"⭐" : "they/them"
 		},
 		"unicode" : true,
-		"message" : "React here for pronouns!\n\n🌕: he/him\n☀️: she/her\n⭐:they/them\n(message @june if you want neopronouns)"
+		"message" : "**React here for pronouns!**\n🌕: he/him\n☀️: she/her\n⭐:they/them\n(message @june if you want neopronouns)"
+	},
+	"topics" : {
+		"emojis" : {
+			"🎨" : "Art",
+			"🇯🇵" : "Anime",
+			"📖" : "Literature",
+			"🎵" : "Music",
+			"📜" : "Philosophy",
+			"🏛️" : "Politics",
+			"🎥" : "Shows and Movies"
+		},
+		"unicode" : true,
+		"message" : false
 	}
-
 }

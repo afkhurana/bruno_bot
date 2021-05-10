@@ -131,8 +131,8 @@ async def send_role_message(ctx, *args):
 	# send message
 	message_content = roles_dict[role_type]["message"]
 	if not isinstance(message_content, str):
-		message_content = f"React here for {role_type} role!\n"
-		if roles_dict[role]["unicode"]:
+		message_content = f"**React here for {role_type} role!**"
+		if roles_dict[role_type]["unicode"]:
 			for emoji, role_name in roles_dict[role_type]["emojis"].items():
 				message_content += f"\n{emoji}: {role_name}"
 		else:
@@ -150,7 +150,10 @@ async def send_role_message(ctx, *args):
 
 
 	# dump id
-	message_ids[role_type].append(message.id)
+	try:
+		message_ids[role_type].append(message.id)
+	except KeyError:
+		message_ids[role_type] = [message.id]
 	dump_ids()
 	return
 
