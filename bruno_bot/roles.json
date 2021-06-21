@@ -24,5 +24,12 @@
 		},
 		"unicode" : true,
 		"message" : false
+	},
+	"CS19" : {
+		"emojis" : {
+			"💻" : "CS19 Placements"
+		},
+		"unicode" : true,
+		"message" : "**React here if you're planning on taking the CS19 placement and want to join the dedicated channel!"
 	}
 }
