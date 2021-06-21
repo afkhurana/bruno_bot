@@ -16,7 +16,11 @@
 			"🎵" : "Music",
 			"📜" : "Philosophy",
 			"🏛️" : "Politics",
-			"🎥" : "Shows and Movies"
+			"🎥" : "Shows and Movies",
+			"🎮" : "Gaming",
+			"⚽️" : "Sports",
+			"👨‍💻" : "Technology",
+			"🐕" : "Pets"
 		},
 		"unicode" : true,
 		"message" : false
