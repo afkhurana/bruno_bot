@@ -166,6 +166,10 @@ async def listen_for_role(payload):
 
 	if member.bot:
 		return
+
+	verified_role = get(guild.roles, name="Verified Brownie")
+	if verified_role not in member.roles:
+		return
 	
 	# check which role
 	load_roles()
