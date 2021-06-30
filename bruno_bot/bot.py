@@ -20,6 +20,7 @@ import smtplib, ssl
 cwd = os.path.dirname(os.path.realpath(__file__))
 message_ids_path = os.path.join(cwd, "message_ids.json")
 roles_path = os.path.join(cwd, "roles.json")
+info_path = os.path.join(cwd, "info.json")
 
 
 intents = discord.Intents()
@@ -38,8 +39,6 @@ INTRODUCTIONS_CHANNEL_NAME=os.getenv("INTRODUCTIONS_CHANNEL")
 # load configs
 with open(os.path.join("configs", "email_info.json")) as f:
 	email_info = json.load(f)
-with open(os.path.join("configs", "games_list.json")) as f:
-	games_list = json.load(f)
 with open(os.path.join("configs", "hi_strings.json")) as f:
 	hi_strings = json.load(f)["hi_strings"]
 
@@ -87,13 +86,18 @@ async def on_ready():
 
 
 
-# ROLES
-
+# ROLES/INFO
 def load_roles():
 	global roles_dict
 	with open(roles_path, newline='') as f:
 		roles_dict = json.load(f)
 load_roles()
+
+def load_info():
+	global info_dict
+	with open(info_path, newline='') as f:
+		info_dict = json.load(f)
+load_info()
 
 @bot.command(name="load")
 async def load(ctx, *args):
@@ -107,8 +111,6 @@ async def load(ctx, *args):
 
 	if args[0] == "roles":
 		load_roles()
-
-
 
 @bot.command(name="role")
 async def send_role_message(ctx, *args):
@@ -188,7 +190,31 @@ async def listen_for_role(payload):
 
 
 
+@bot.command(name="info")
+async def send_info_message(ctx, *args):
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return			
+		if args[-1].lower() != "please":
+			await ctx.send("Say please!")
+			return
 
+	load_info()
+	info_type = args[0]
+	if info_type not in list(info_dict.keys()):
+		await ctx.send("Pardon me, didn't quite get that.")
+		return
+
+	# command success
+
+	# send message
+	message_content = info_dict[info_type]["message"]
+	if not isinstance(message_content, str):
+		raise Exception(f"Arjun, check out the message for info.json/{info_type}")
+	message = await ctx.send(message_content)
+
+	return
 
 
 
