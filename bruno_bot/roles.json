@@ -25,6 +25,13 @@
 		"unicode" : true,
 		"message" : false
 	},
+	"housing" : {
+		"emojis" : {
+			"🙅" : "Sub-Free Housing"
+		},
+		"unicode" : true,
+		"message" : "**React here for housing role!**\n🙅: Sub-Free Housing\n*(More to come later)*"
+	},
 	"CS19" : {
 		"emojis" : {
 			"💻" : "CS19 Placements"
