@@ -23,8 +23,6 @@ roles_path = os.path.join(cwd, "roles.json")
 info_path = os.path.join(cwd, "info.json")
 
 
-intents = discord.Intents()
-intents = intents.all()
 
 
 load_dotenv()
@@ -45,8 +43,9 @@ with open(os.path.join("configs", "hi_strings.json")) as f:
 
 
 # initialize client
+intents = discord.Intents()
+intents = intents.all()
 bot = commands.Bot(command_prefix="bruno!", intents=intents)
-message_ids = None
 
 
 
@@ -80,10 +79,18 @@ async def on_ready():
 			glob_introductions_channel = channel
 
 	message_goodmorning.start()
-	# message_greetings.start()
 
 
-
+# general purpose functions
+def check_please(ctx, args):
+	if SAY_PLEASE:
+		if len(args) == 0:
+			await ctx.send("Say please!")
+			return False		
+		if args[-1].lower() != "please":
+			await ctx.send("Say please!")
+			return False
+	return True
 
 
 # ROLES/INFO
@@ -101,35 +108,21 @@ load_info()
 
 @bot.command(name="load")
 async def load(ctx, *args):
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
+	if not check_please(ctx, args):
+		return
 	if args[0] == "roles":
 		load_roles()
 
 @bot.command(name="role")
 async def send_role_message(ctx, *args):
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
+	if not check_please(ctx, args):
+		return
 	load_roles()
 	role_type = args[0]
 	if role_type not in list(roles_dict.keys()):
 		await ctx.send("Pardon me, didn't quite get that.")
 		return
-
 	# command success
-
 	# send message
 	message_content = roles_dict[role_type]["message"]
 	if not isinstance(message_content, str):
@@ -149,8 +142,6 @@ async def send_role_message(ctx, *args):
 	else:
 		for emoji_name, role_name in roles_dict[role_type]["emojis"].items():
 			emoji = get(bot.emojis, name=emoji_name)
-
-
 	# dump id
 	try:
 		message_ids[role_type].append(message.id)
@@ -167,8 +158,7 @@ async def listen_for_role(payload):
 	guild = member.guild
 
 	if member.bot:
-		return
-
+		return	
 	verified_role = get(guild.roles, name="Verified Brownie")
 	if verified_role not in member.roles:
 		return
@@ -181,65 +171,40 @@ async def listen_for_role(payload):
 			role_type = check_role_type
 	if role_type is None:
 		return
-
 	role_name = roles_dict[role_type]["emojis"][emoji]
-
 	role = get(guild.roles, name=role_name)
 	await member.add_roles(role, reason="Roles by Bruno!")
 	print(f"Gave member {member} role {role_type} {role_name}")
 
-
-
 @bot.command(name="info")
 async def send_info_message(ctx, *args):
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
+	if not check_please(ctx, args):
+		return
 	load_info()
 	info_type = args[0]
 	if info_type not in list(info_dict.keys()):
 		await ctx.send("Pardon me, didn't quite get that.")
 		return
-
 	# command success
-
 	# send message
 	message_content = info_dict[info_type]["message"]
 	if not isinstance(message_content, str):
 		raise Exception(f"Arjun, check out the message for info.json/{info_type}")
 	message = await ctx.send(message_content)
-
 	return
-
-
 
 @bot.command(name="goodmorning", ignore_extra=True)
 async def goodmorning(ctx, *args):
 	guild = ctx.guild
-
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
+	if not check_please(ctx, args):
+		return
 	await message_goodmorning()
 
-
 @bot.listen('on_message')
-async def listen_for_goodmorning(message):
-	guild = message.guild
-
+async def listen_for_emoji_reacts(message):
 	if message.is_system():
 		return
-
+	guild = message.guild
 	if "good morning" in message.content.lower():
 		await message.add_reaction("\N{HEAVY BLACK HEART}")
 		await message.add_reaction(get(bot.emojis, name="bruno"))
@@ -247,7 +212,6 @@ async def listen_for_goodmorning(message):
 		await message.add_reaction(get(bot.emojis, name="bruno"))
 	elif "darius" in message.content.lower():
 		await message.add_reaction(get(bot.emojis, name="darius"))
-
 
 @tasks.loop(hours=24)
 async def message_goodmorning():
@@ -265,15 +229,12 @@ async def before_message_goodmorning():
 			break
 		await asyncio.sleep(30)
 
-
-
 @bot.listen('on_message')
 async def listen_for_introduction(message):
 	if message.channel != glob_introductions_channel:
 		return
 	if message.is_system():
 		return
-
 	if any(hi_string in message.content.lower() for hi_string in hi_strings):
 		await message.add_reaction("\N{WAVING HAND SIGN}")
 
@@ -329,31 +290,17 @@ async def dm_member_on_join(member):
 
 @bot.command("verify")
 async def verify_me(ctx, *args):
-
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return			
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return
-
+	if not check_please(ctx, args):
+		return
 	if args[0].lower().startswith('<@!'):
 		user_id = int(args[0][3:-1])
 		member = ctx.guild.get_member(user_id)
 		await member.send(welcome_message)
 		await member.send(please_send_email_message)
-
-
 	elif args[0].lower() == "me":
-		# return
-
-
 		member = ctx.author
-
 		await member.send(welcome_message)
 		await member.send(please_send_email_message)
-
 
 
 @bot.listen('on_message')
@@ -364,31 +311,21 @@ async def handle_dm(message):
 		return
 	if message.author.bot:
 		return
-
 	# message is DM
 	last_message = await message.channel.history(limit=10).find(lambda m: m.author.id == bot.user.id)
 	last_message = last_message.content
-
 	verification_code = create_verification_code(message.author.id, secret_key)
-
-
 	if last_message == please_send_email_message:
-
 		# message is email address
 		if not message.content.endswith("@brown.edu"):
 			await message.channel.send(email_invalid_message)
 			await message.channel.send(please_send_email_message)
-	
 		else:
 			address = message.content
 			subject = "Brown '25 Discord Verification Code"
-			
-			# body = None
 			body = "Here is your verification code! Copy-paste this into your DM with Bruno (me):\n\n" + verification_code #TODO make pretty
-
 			send_email(address, subject, body)
 			await message.channel.send(emailed_code_message)
-
 	elif last_message == emailed_code_message:
 		# message is verification code
 		if message.content != verification_code:
