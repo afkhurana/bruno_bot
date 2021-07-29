@@ -89,10 +89,11 @@ def check_please(func):
                         if len(args) == 0:
                                 await ctx.send("Say please!")
                                 
-                        if args[-1].lower() != "please":
+                        elif args[-1].lower() != "please":
                                 await ctx.send("Say please!")
 
-                await func(ctx, args)
+                        else:
+                                await func(ctx, args)
 	return wrapper
 
 
