@@ -82,15 +82,18 @@ async def on_ready():
 
 
 # general purpose functions
-def check_please(ctx, args):
-	if SAY_PLEASE:
-		if len(args) == 0:
-			await ctx.send("Say please!")
-			return False		
-		if args[-1].lower() != "please":
-			await ctx.send("Say please!")
-			return False
-	return True
+def check_please(func):
+
+        async wrapper(ctx, *args):
+                if SAY_PLEASE:
+                        if len(args) == 0:
+                                await ctx.send("Say please!")
+                                
+                        if args[-1].lower() != "please":
+                                await ctx.send("Say please!")
+
+                await func(ctx, args)
+	return wrapper
 
 
 # ROLES/INFO
@@ -107,16 +110,14 @@ def load_info():
 load_info()
 
 @bot.command(name="load")
+@check_please
 async def load(ctx, *args):
-	if not check_please(ctx, args):
-		return
 	if args[0] == "roles":
 		load_roles()
 
 @bot.command(name="role")
+@check_please
 async def send_role_message(ctx, *args):
-	if not check_please(ctx, args):
-		return
 	load_roles()
 	role_type = args[0]
 	if role_type not in list(roles_dict.keys()):
@@ -177,9 +178,8 @@ async def listen_for_role(payload):
 	print(f"Gave member {member} role {role_type} {role_name}")
 
 @bot.command(name="info")
+@check_please
 async def send_info_message(ctx, *args):
-	if not check_please(ctx, args):
-		return
 	load_info()
 	info_type = args[0]
 	if info_type not in list(info_dict.keys()):
@@ -194,17 +194,15 @@ async def send_info_message(ctx, *args):
 	return
 
 @bot.command(name="goodmorning", ignore_extra=True)
+@check_please
 async def goodmorning(ctx, *args):
 	guild = ctx.guild
-	if not check_please(ctx, args):
-		return
 	await message_goodmorning()
 
 @bot.listen('on_message')
 async def listen_for_emoji_reacts(message):
 	if message.is_system():
-		return
-	guild = message.guild
+		return	guild = message.guild
 	if "good morning" in message.content.lower():
 		await message.add_reaction("\N{HEAVY BLACK HEART}")
 		await message.add_reaction(get(bot.emojis, name="bruno"))
