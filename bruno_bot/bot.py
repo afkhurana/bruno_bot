@@ -289,9 +289,8 @@ async def dm_member_on_join(member):
 
 
 @bot.command("verify")
+@check_please
 async def verify_me(ctx, *args):
-	if not check_please(ctx, args):
-		return
 	if args[0].lower().startswith('<@!'):
 		user_id = int(args[0][3:-1])
 		member = ctx.guild.get_member(user_id)
