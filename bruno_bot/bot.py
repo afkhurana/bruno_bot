@@ -203,7 +203,8 @@ async def goodmorning(ctx, *args):
 @bot.listen('on_message')
 async def listen_for_emoji_reacts(message):
 	if message.is_system():
-		return	guild = message.guild
+		return
+	guild = message.guild
 	if "good morning" in message.content.lower():
 		await message.add_reaction("\N{HEAVY BLACK HEART}")
 		await message.add_reaction(get(bot.emojis, name="bruno"))
