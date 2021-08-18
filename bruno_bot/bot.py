@@ -15,8 +15,9 @@ import smtplib, ssl
 
 import logging
 
-logging.basicConfig(filename='bruno.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(stream=sys.stdout, filename='bruno.log', encoding='utf-8')
 logger = logging.getLogger('bruno_logger')
+logger.setLevel(logging.DEBUG)
 
 
 
