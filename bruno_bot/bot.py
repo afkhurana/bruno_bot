@@ -84,7 +84,7 @@ async def on_ready():
 # general purpose functions
 def check_please(func):
 
-        async wrapper(ctx, *args):
+        async def wrapper(ctx, *args):
                 if SAY_PLEASE:
                         if len(args) == 0:
                                 await ctx.send("Say please!")
