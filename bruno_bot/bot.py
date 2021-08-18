@@ -84,16 +84,16 @@ async def on_ready():
 # general purpose functions
 def check_please(func):
 
-        async def wrapper(ctx, *args):
-                if SAY_PLEASE:
-                        if len(args) == 0:
-                                await ctx.send("Say please!")
-                                
-                        elif args[-1].lower() != "please":
-                                await ctx.send("Say please!")
+	async def wrapper(ctx, *args):
+		if SAY_PLEASE:
+			if len(args) == 0:
+				await ctx.send("Say please!")
+				
+			elif args[-1].lower() != "please":
+				await ctx.send("Say please!")
 
-                        else:
-                                await func(ctx, args)
+			else:
+				await func(ctx, args)
 	return wrapper
 
 
@@ -253,10 +253,10 @@ def send_email(address, subject, body):
 
     context = ssl.create_default_context()
     with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls(context=context)
-        server.login(email_info["login_info"]["username"], email_info["login_info"]["password"])
-        server.sendmail(sent_from, to, message)
-        server.close()
+	server.starttls(context=context)
+	server.login(email_info["login_info"]["username"], email_info["login_info"]["password"])
+	server.sendmail(sent_from, to, message)
+	server.close()
 
 
 welcome_message = ("Welcome! In order to gain access to the Brown Class of 2025 Discord server, "
