@@ -94,10 +94,10 @@ def check_please(func):
 	async def wrapper(ctx, *args):
 		if SAY_PLEASE:
 			logger.debug(args)
-			if len(args[0]) == 0:
+			if len(args) == 0:
 				await ctx.send("Say please!")
 				
-			elif args[0][-1].lower() != "please":
+			elif args[-1].lower() != "please":
 				await ctx.send("Say please!")
 
 			else:
