@@ -93,10 +93,10 @@ async def on_ready():
 def check_please(func):
 	async def wrapper(ctx, *args):
 		if SAY_PLEASE:
-			if len(args) == 0:
+			if len(args[0]) == 0:
 				await ctx.send("Say please!")
 				
-			elif args[-1].lower() != "please":
+			elif args[0][-1].lower() != "please":
 				await ctx.send("Say please!")
 
 			else:
@@ -120,14 +120,16 @@ load_info()
 @bot.command(name="load")
 @check_please
 async def load(ctx, *args):
-	if args[0] == "roles":
+	if args[0][0] == "roles":
 		load_roles()
+	elif args[0][0] == "info":
+		load_info()
 
 @bot.command(name="role")
 @check_please
 async def send_role_message(ctx, *args):
 	load_roles()
-	role_type = args[0]
+	role_type = args[0][0]
 	if role_type not in list(roles_dict.keys()):
 		await ctx.send("Pardon me, didn't quite get that.")
 		return
@@ -189,7 +191,7 @@ async def listen_for_role(payload):
 @check_please
 async def send_info_message(ctx, *args):
 	load_info()
-	info_type = args[0]
+	info_type = args[0][0]
 	if info_type not in list(info_dict.keys()):
 		await ctx.send("Pardon me, didn't quite get that.")
 		return
@@ -299,12 +301,12 @@ async def dm_member_on_join(member):
 @check_please
 async def verify_me(ctx, *args):
 	try:
-		if args[0].lower().startswith('<@!'):
-			user_id = int(args[0][3:-1])
+		if args[0][0].lower().startswith('<@!'):
+			user_id = int(args[0][0][3:-1])
 			member = ctx.guild.get_member(user_id)
 			await member.send(welcome_message)
 			await member.send(please_send_email_message)
-		elif args[0].lower() == "me":
+		elif args[0][0].lower() == "me":
 			member = ctx.author
 			await member.send(welcome_message)
 			await member.send(please_send_email_message)
