@@ -313,6 +313,8 @@ async def verify_me(ctx, *args):
 			await member.send(please_send_email_message)
 	except AttributeError as e:
 		logger.exception(f'Error in verify_me: args {args}')
+	except discord.errors.Forbidden as e:
+		logger.exception(f'Error in verify_me: args {args}')
 
 
 @bot.listen('on_message')
