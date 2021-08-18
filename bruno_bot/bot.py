@@ -93,6 +93,7 @@ async def on_ready():
 def check_please(func):
 	async def wrapper(ctx, *args):
 		if SAY_PLEASE:
+			logger.debug(args)
 			if len(args[0]) == 0:
 				await ctx.send("Say please!")
 				
