@@ -309,7 +309,7 @@ async def verify_me(ctx, *args):
 			await member.send(welcome_message)
 			await member.send(please_send_email_message)
 	except commands.CommandInvokeError as e:
-		logger.exception(f'Error in verify_me: args {args}', exc_info=e)
+		logger.exception(f'Error in verify_me: args {args}')
 
 
 @bot.listen('on_message')
