@@ -16,6 +16,7 @@ import smtplib, ssl
 import logging
 
 logging.basicConfig(filename='bruno.log', encoding='utf-8', level=logging.DEBUG)
+logger = logging.getLogger('bruno_logger')
 
 
 
@@ -69,13 +70,13 @@ async def on_ready():
 		if guild.name == DISCORD_GUILD:
 			global glob_guild
 			glob_guild = guild
-			logging.info(f'{bot.user} is listening to guild {guild.name}')
+			logger.info(f'{bot.user} is listening to guild {guild.name}')
 			break
 	for channel in glob_guild.channels:
 		if channel.name == GOODMORNING_CHANNEL_NAME:
 			global glob_goodmorning_channel
 			glob_goodmorning_channel = channel
-			logging.info(f'{bot.user} wants to say Good Morning! in #{channel.name}')
+			logger.info(f'{bot.user} wants to say Good Morning! in #{channel.name}')
 		elif channel.name == INTRODUCTIONS_CHANNEL_NAME:
 			global glob_introductions_channel
 			glob_introductions_channel = channel
@@ -177,7 +178,7 @@ async def listen_for_role(payload):
 	role_name = roles_dict[role_type]["emojis"][emoji]
 	role = get(guild.roles, name=role_name)
 	await member.add_roles(role, reason="Roles by Bruno!")
-	logging.info(f"Gave member {member} role {role_type} {role_name}")
+	logger.info(f"Gave member {member} role {role_type} {role_name}")
 
 @bot.command(name="info")
 @check_please
@@ -216,17 +217,17 @@ async def listen_for_emoji_reacts(message):
 
 @tasks.loop(hours=24)
 async def message_goodmorning():
-	logging.info("Good morning!")
+	logger.info("Good morning!")
 	message = await glob_goodmorning_channel.send("Good morning!")
 	message_ids["goodmornings"].append(message.id)
 	dump_ids()
 
 @message_goodmorning.before_loop
 async def before_message_goodmorning():
-	logging.info("Waiting to enter goodmorning loop")
+	logger.info("Waiting to enter goodmorning loop")
 	for _ in range(60*60*24):
 		if datetime.datetime.now(pytz.timezone("US/Eastern")).hour == 9:
-			logging.info("Entering goodmorning loop")
+			logger.info("Entering goodmorning loop")
 			break
 		await asyncio.sleep(30)
 
@@ -303,7 +304,7 @@ async def verify_me(ctx, *args):
 			await member.send(welcome_message)
 			await member.send(please_send_email_message)
 	except commands.CommandInvokeError as e:
-		logging.exception(f'Error in verify_me: args {args}', exc_info=e)
+		logger.exception(f'Error in verify_me: args {args}', exc_info=e)
 
 
 @bot.listen('on_message')
