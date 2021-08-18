@@ -308,7 +308,7 @@ async def verify_me(ctx, *args):
 			member = ctx.author
 			await member.send(welcome_message)
 			await member.send(please_send_email_message)
-	except commands.CommandInvokeError as e:
+	except commands.errors.CommandInvokeError as e:
 		logger.exception(f'Error in verify_me: args {args}')
 
 
