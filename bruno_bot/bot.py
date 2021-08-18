@@ -247,12 +247,12 @@ def create_verification_code(*args):
 
 def send_email(address, subject, body):
 
-    sent_from = email_info["login_info"]["username"]
-    to = [address]
-    message = 'Subject: {}\n\n{}'.format(subject, body)
+	sent_from = email_info["login_info"]["username"]
+	to = [address]
+	message = 'Subject: {}\n\n{}'.format(subject, body)
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+	context = ssl.create_default_context()
+	with smtplib.SMTP("smtp.gmail.com", 587) as server:
 	server.starttls(context=context)
 	server.login(email_info["login_info"]["username"], email_info["login_info"]["password"])
 	server.sendmail(sent_from, to, message)
