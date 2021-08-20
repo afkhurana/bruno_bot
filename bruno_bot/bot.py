@@ -37,6 +37,7 @@ greetings_path = os.path.join(cwd, "configs", "fun_messages.txt")
 load_dotenv()
 DISCORD_TOKEN=os.getenv("DISCORD_TOKEN")
 DISCORD_GUILD=os.getenv("DISCORD_GUILD")
+ADMIN_ID=os.getenv("ADMIN_ID")
 
 SAY_PLEASE=os.getenv("SAY_PLEASE")
 
@@ -375,7 +376,14 @@ async def give_user_brown_verified_role(user):
 async def message_general_on_join(member):
 	general_channel = get(member.guild.channels, name='general')
 	greeting = random.choice(greetings_messages)
+	await asyncio.sleep(1)
 	await general_channel.send(greeting)
 
+@bot.command('say')
+async def say(ctx, *args):
+	if ctx.author.id != ADMIN_ID:
+		return
+	general_channel = get(glob_guild.channels, name='general')
+	await general_channel.send(args[0])
 
 bot.run(DISCORD_TOKEN)
