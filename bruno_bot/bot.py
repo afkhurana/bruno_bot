@@ -179,11 +179,11 @@ async def send_role_message(ctx, *args):
 async def listen_for_role(payload):
 	emoji = str(payload.emoji)
 	member = payload.member
+	if member.bot:
+		return
 	message_id = payload.message_id
 	guild = member.guild
 
-	if member.bot:
-		return	
 	verified_role = get(guild.roles, name="Verified Brownie")
 	if verified_role not in member.roles:
 		return
