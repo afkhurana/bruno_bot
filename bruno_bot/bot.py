@@ -16,7 +16,7 @@ import smtplib, ssl
 
 import logging
 
-logging.basicConfig(filename='bruno.log', encoding='utf-8')
+logging.basicConfig(filename=os.path.join('logs', 'bruno.log'), encoding='utf-8')
 logger = logging.getLogger('bruno_logger')
 logger.setLevel(logging.DEBUG)
 handler = logging.StreamHandler(sys.stdout)
@@ -26,9 +26,9 @@ logger.addHandler(handler)
 
 
 cwd = os.path.dirname(os.path.realpath(__file__))
-message_ids_path = os.path.join(cwd, "message_ids.json")
-roles_path = os.path.join(cwd, "roles.json")
-info_path = os.path.join(cwd, "info.json")
+message_ids_path = os.path.join(cwd, "cache", "message_ids.json")
+roles_path = os.path.join(cwd, "configs", "roles.json")
+info_path = os.path.join(cwd, "configs", "info.json")
 
 
 
@@ -42,11 +42,7 @@ SAY_PLEASE=os.getenv("SAY_PLEASE")
 GOODMORNING_CHANNEL_NAME=os.getenv("GOODMORNING_CHANNEL")
 INTRODUCTIONS_CHANNEL_NAME=os.getenv("INTRODUCTIONS_CHANNEL")
 
-# load configs
-with open(os.path.join("configs", "email_info.json")) as f:
-	email_info = json.load(f)
-with open(os.path.join("configs", "hi_strings.json")) as f:
-	hi_strings = json.load(f)["hi_strings"]
+
 
 
 
@@ -105,7 +101,7 @@ def check_please(func):
 	return wrapper
 
 
-# ROLES/INFO
+# roles/info/configs
 def load_roles():
 	global roles_dict
 	with open(roles_path, newline='') as f:
@@ -118,13 +114,28 @@ def load_info():
 		info_dict = json.load(f)
 load_info()
 
+def load_greetings():
+	global greetings_messages
+	with open(greetings_path, newline='') as f:
+		greetings_messages = f.read().split('\n')
+load_greetings()
+
+def load_email_info():
+	global email_info
+	with open(os.path.join("configs", "email_info.json")) as f:
+		email_info = json.load(f)
+load_email_info()
+
 @bot.command(name="load")
 @check_please
 async def load(ctx, *args):
-	if args[0][0] == "roles":
-		load_roles()
-	elif args[0][0] == "info":
-		load_info()
+	load_map = {
+		"roles" : load_roles,
+		"info" : load_info,
+		"greetings" : load_greetings,
+		"email_info" : load_email_info
+	}
+	load_map[args[0][0]]()
 
 @bot.command(name="role")
 @check_please
@@ -288,7 +299,6 @@ async def dm_member_on_join(member):
 	await member.send(please_send_email_message)
 	return
 
-
 # @bot.command("verify_everyone")
 # async def verify_everyone(ctx, *args):
 # 	for member in glob_guild.members:
@@ -357,6 +367,14 @@ async def give_user_brown_verified_role(user):
 	return
 
 # END VERIFICATION
+
+
+
+@bot.listen('on_member_join')
+async def message_general_on_join(member):
+	general_channel = get(member.guild.channels, name='general')
+	greeting = random.choice(greetings_messages)
+	await general_channel.send(greeting)
 
 
 bot.run(DISCORD_TOKEN)

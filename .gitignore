@@ -1,12 +1,10 @@
 .env
 client.py
-message_ids.json
 
 testing.py
-src/configs/*
-bruno_bot/configs/*
 
 env/
+cache/*
 
 bruno_bot/screenshots/
 
