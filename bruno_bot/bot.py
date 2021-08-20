@@ -29,6 +29,7 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 message_ids_path = os.path.join(cwd, "cache", "message_ids.json")
 roles_path = os.path.join(cwd, "configs", "roles.json")
 info_path = os.path.join(cwd, "configs", "info.json")
+greetings_path = os.path.join(cwd, "configs", "fun_messages.txt")
 
 
 

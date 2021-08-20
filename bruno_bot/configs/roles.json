@@ -67,6 +67,8 @@
 			"💎" : "Emery",
 			"🐑" : "Woolley",
 			"✨" : "New Pembroke 4"
-		}
+		},
+		"unicode" : true,
+		"message" : false
 	}
 }

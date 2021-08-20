@@ -5,6 +5,7 @@ testing.py
 
 env/
 cache/*
+logs/*
 
 bruno_bot/screenshots/
 
