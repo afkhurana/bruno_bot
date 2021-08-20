@@ -52,5 +52,21 @@
 		},
 		"unicode" : true,
 		"message" : "**React here if you're planning on taking the BIO200 placement and want to join the dedicated channel!**\n*More info at: https://www.brown.edu/academics/biology/undergraduate-education/course-offerings/ap-transfer-study-abroad-credit*"	
+	},
+	"halls" : {
+		"emojis" : {
+			"🇵🇱" : "Everett-Poland",
+			"🍻" : "Jameson-Mead",
+			"🏛️" : "Archibald-Bronson",
+			"🍲" : "Andrews",
+			"🐄" : "Metcalf",
+			"🌾" : "Miller",
+			"🇼" : "Wayland",
+			"🥌" : "Morriss",
+			"🍾" : "Champlin",
+			"💎" : "Emery",
+			"🐑" : "Woolley",
+			"✨" : "New Pembroke 4"
+		}
 	}
 }
