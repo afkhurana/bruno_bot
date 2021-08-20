@@ -37,7 +37,7 @@ greetings_path = os.path.join(cwd, "configs", "fun_messages.txt")
 load_dotenv()
 DISCORD_TOKEN=os.getenv("DISCORD_TOKEN")
 DISCORD_GUILD=os.getenv("DISCORD_GUILD")
-ADMIN_ID=os.getenv("ADMIN_ID")
+ADMIN_ID=int(os.getenv("ADMIN_ID"))
 
 SAY_PLEASE=os.getenv("SAY_PLEASE")
 
