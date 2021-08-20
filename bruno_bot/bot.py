@@ -383,10 +383,8 @@ async def message_general_on_join(member):
 
 @bot.command('say')
 async def say(ctx, *args):
-	print(386)
 	if ctx.author.id != ADMIN_ID:
 		return
-	print(389)
 	general_channel = get(glob_guild.channels, name='general')
 	await general_channel.send(args[0])
 
