@@ -237,6 +237,8 @@ async def listen_for_emoji_reacts(message):
 		await message.add_reaction(get(bot.emojis, name="bruno"))
 	elif "darius" in message.content.lower():
 		await message.add_reaction(get(bot.emojis, name="darius"))
+	elif "dartmouth" in message.content.lower():
+		await message.add_reaction(get(bot.emojis, name="keggy"))
 
 @tasks.loop(hours=24)
 async def message_goodmorning():
