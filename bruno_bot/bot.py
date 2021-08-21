@@ -91,7 +91,7 @@ async def on_ready():
 def check_please(func):
 	async def wrapper(ctx, *args):
 		if SAY_PLEASE:
-			logger.debug(args)
+			# logger.debug(args)
 			if len(args) == 0:
 				await ctx.send("Say please!")
 				
@@ -352,7 +352,14 @@ async def verify_me(ctx, *args):
 	except AttributeError as e:
 		logger.exception(f'Error in verify_me: args {args}')
 	except discord.errors.Forbidden as e:
-		logger.exception(f'Error in verify_me: args {args}')
+		# logger.exception(f'Error in verify_me: args {args}')
+		logger.error(f'403 when trying to send verification message to user {member.name} with ID {member.id}')
+		logger.info(f'Attempting friend request')
+		try:
+			await member.send_friend_request()
+			logger.info(f'Successfully')
+		except discord.errors.Forbidden as f:
+			logger.error(f'403 when trying to send friend request to user {member.name} with ID {member.id}')
 
 
 @bot.listen('on_message')
