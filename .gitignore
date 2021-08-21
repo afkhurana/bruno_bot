@@ -3,9 +3,9 @@ client.py
 
 testing.py
 
-bruno_bot/env/
-bruno_bot/cache/*
-bruno_bot/logs/*
+env/
+cache/*
+logs/*
 
 bruno_bot/screenshots/
 
