@@ -175,6 +175,28 @@ async def send_role_message(ctx, *args):
 	dump_ids()
 	return
 
+
+@bot.command(name="housingstats")
+@check_please
+async def housing_stats(ctx, *args):
+
+        rolenames = ["Everett-Poland", "Jameson-Mead",
+                     "Archibald-Bronson", "Andrews", "Metcalf",
+                     "Miller", "Wayland", "Morriss", "Champlin",
+                     "Emery", "Woolley", "New Pembroke 4"]
+        roles = []
+        outstr = "Housing role counts!\n\n"
+
+        for rolename in rolenames:
+
+                roles.append(discord.utils.get(ctx.guild.roles, name=rolename))
+
+        for role in roles:
+
+                outstr += f"{role.name}: {len(role.members)}\n"
+
+        await ctx.send(outstr)
+
 @bot.listen('on_raw_reaction_add')
 async def listen_for_role(payload):
 	emoji = str(payload.emoji)
