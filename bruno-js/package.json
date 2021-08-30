@@ -1,0 +1,14 @@
+{
+  "name": "bruno",
+  "version": "1.0.0",
+  "description": "Bruno bot (discord.js port) for Brown '25 discord server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.1.0"
+  }
+}
