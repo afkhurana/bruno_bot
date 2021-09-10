@@ -25,33 +25,14 @@
 		"unicode" : true,
 		"message" : false
 	},
-	"housing" : {
+	"CS" : {
 		"emojis" : {
-			"🙅" : "Sub-Free Housing"
+			"5️⃣" : "CS15",
+			"7️⃣" : "CS17",
+			"9️⃣" : "CS19"
 		},
 		"unicode" : true,
-		"message" : "**React here for housing role!**\n🙅: Sub-Free Housing\n*(More to come later)*"
-	},
-	"CS19" : {
-		"emojis" : {
-			"💻" : "CS19 Placements"
-		},
-		"unicode" : true,
-		"message" : "**React here if you're planning on taking the CS19 placement and want to join the dedicated channel!**\n*More info at: https://cs.brown.edu/courses/csci0190/2021/*"
-	},
-	"CHEM330" : {
-		"emojis" : {
-			"🧪" : "CHEM330 Placements"
-		},
-		"unicode" : true,
-		"message" : "**React here if you're planning on taking the CHEM330 placement and want to join the dedicated channel!**\n*More info at: https://www.brown.edu/academics/chemistry/faq-category/chemistry-placement-exam*"	
-	},
-	"BIO200" : {
-		"emojis" : {
-			"🧬" : "BIO200 Placements"
-		},
-		"unicode" : true,
-		"message" : "**React here if you're planning on taking the BIO200 placement and want to join the dedicated channel!**\n*More info at: https://www.brown.edu/academics/biology/undergraduate-education/course-offerings/ap-transfer-study-abroad-credit*"	
+		"message" : false
 	},
 	"halls" : {
 		"emojis" : {
