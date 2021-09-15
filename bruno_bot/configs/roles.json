@@ -34,6 +34,13 @@
 		"unicode" : true,
 		"message" : false
 	},
+	"MATH" : {
+		"emojis" : {
+			"1️⃣" : "MATH100",
+			"8️⃣" : "MATH180",
+			"5️⃣" : "MATH520"
+		}
+	},
 	"halls" : {
 		"emojis" : {
 			"🇵🇱" : "Everett-Poland",
