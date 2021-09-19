@@ -25,6 +25,29 @@
 		"unicode" : true,
 		"message" : false
 	},
+	"APMA" : {
+		"emojis" : {
+			"🅾" : "APMA0350",
+			"📈" : "APMA1650",
+			"📉" : "APMA1655"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"BIO" : {
+		"emojis" : {
+			"🌎": "BIOL0210"
+		},
+		"unicode" : true,
+		"message" : false,
+	},
+	"CHEM" : {
+		"emojis" : {
+			"3️⃣" : "CHEM330"
+		},
+		"unicode" : true,
+		"message" : false
+	},
 	"CS" : {
 		"emojis" : {
 			"5️⃣" : "CS15",
@@ -34,12 +57,91 @@
 		"unicode" : true,
 		"message" : false
 	},
+	"CLPS" : {
+		"emojis" : {
+			"🧠" : "CLPS0010",
+			"🦜" : "Intro to Linguistics"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"ECON" : {
+		"emojis" : {
+			"1️⃣" : "ECON0110"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"ENGN" : {
+		"emojis" : {
+			"0️⃣" : "ENGN0030",
+			"2️⃣" : "ENGN0032"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"HIST" : {
+		"emojis" : {
+			"💲" : "History of Capitalism",
+			"🌎" : "HIST0270A"
+		},
+		"unicode" : true,
+		"message" : false
+	},
 	"MATH" : {
 		"emojis" : {
-			"1️⃣" : "MATH100",
-			"8️⃣" : "MATH180",
-			"5️⃣" : "MATH520"
-		}
+			"9️⃣" : "MATH0090",
+			"1️⃣" : "MATH0100",
+			"8️⃣" : "MATH0180",
+			"3️⃣" : "MATH0350",
+			"📈" : "MATH0520",
+			"📉" : "MATH0540",
+			"😲" : "MATH1130"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"NEUR" : {
+		"emojis" : {
+			"1️⃣" : "NEUR0010"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"PHIL" : {
+		"emojis" : {
+			"🛐" : "Philosophy of Religion",
+			"🍔" : "Food and Philosophy",
+			"🏛" : "Ancient Greek Philosophy",
+			"✖" : "Logic"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"PHP" : {
+		"emojis" : {
+			"🇺🇸" : "Healthcare in the US"
+		},
+		"unicode" : true,
+		"message" : false,
+	},
+	"PHYS" : {
+		"emojis" : {
+			"🅰" : "Physics A",
+			"🅱" : "Physics B",
+			"5️⃣" : "PHYS0050",
+			"7️⃣" : "PHYS0070",
+			"🎷": "PHYS0150"
+		},
+		"unicode" : true,
+		"message" : false
+	},
+	"RUSS" : {
+		"emojis" : {
+			"📖" : "Brothers Karamazov"
+		},
+		"unicode" : true,
+		"message" : false
 	},
 	"halls" : {
 		"emojis" : {
