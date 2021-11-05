@@ -39,7 +39,7 @@
 			"🌎": "BIOL0210"
 		},
 		"unicode" : true,
-		"message" : false,
+		"message" : false
 	},
 	"CHEM" : {
 		"emojis" : {
@@ -93,6 +93,7 @@
 			"9️⃣" : "MATH0090",
 			"1️⃣" : "MATH0100",
 			"8️⃣" : "MATH0180",
+			"2️⃣" : "MATH0200",
 			"3️⃣" : "MATH0350",
 			"📈" : "MATH0520",
 			"📉" : "MATH0540",
@@ -120,7 +121,8 @@
 			"🛐" : "Philosophy of Religion",
 			"🍔" : "Food and Philosophy",
 			"🏛" : "Ancient Greek Philosophy",
-			"✖" : "Logic"
+			"✖" : "Logic",
+			"📱" : "Digital Ethics"
 		},
 		"unicode" : true,
 		"message" : false
@@ -130,7 +132,7 @@
 			"🇺🇸" : "Healthcare in the US"
 		},
 		"unicode" : true,
-		"message" : false,
+		"message" : false
 	},
 	"PHYS" : {
 		"emojis" : {
