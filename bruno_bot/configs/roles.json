@@ -101,6 +101,13 @@
 		"unicode" : true,
 		"message" : false
 	},
+	"MUSC" : {
+		"emojis" : {
+			"🎼" : "MUSC0550"
+		},
+		"unicode" : true,
+		"message" : false
+	},
 	"NEUR" : {
 		"emojis" : {
 			"1️⃣" : "NEUR0010"
